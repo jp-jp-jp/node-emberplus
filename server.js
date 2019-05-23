@@ -378,6 +378,11 @@ TreeServer.prototype.handleGetDirectory = function(client, element) {
             // report their value changes automatically.
             this.subscribe(client, element);
         }
+         else if (element.getChildren() !== null) {
+            for (let child of element.getChildren()) {
+                this.subscribe(client, child)
+            }
+        }
         let res;
         if (client.request.path == null) {
             res = this.getResponse(element);
@@ -421,8 +426,9 @@ TreeServer.prototype.setValue = function(element, value, origin, key) {
             if (element.isParameter()) {
                 if ((element.contents.access !== undefined) &&
                     (element.contents.access.value > 1)) {
+                     orginalvalue = element.contents.value;
                     element.contents.value = value;
-                    this.emit("value-change", element);
+                    this.emit("value-change", element, orginalvalue);
                 }
             }
             else if (element.isMatrix()) {
